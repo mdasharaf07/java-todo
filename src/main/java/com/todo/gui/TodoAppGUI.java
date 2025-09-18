@@ -37,22 +37,21 @@ public class TodoAppGUI extends JFrame {
         setSize(800, 600);
         setLocationRelativeTo(null);
 
-        String[] columnNames = {"ID", "Title", "Description", "Completed", "Created At", "Updated At"};
-        tableModel = new DefaultTableModel(columnNames, 0){
+        String[] columnNames = { "ID", "Title", "Description", "Completed", "Created At", "Updated At" };
+        tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
-            public boolean isCellEditable(int row, int column){
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
         todoTable = new JTable(tableModel);
         todoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         todoTable.getSelectionModel().addListSelectionListener(
-            e -> {
-                if(!e.getValueIsAdjusting()){
-                    // loadSelectedTodo();
-                }
-            }
-        );
+                e -> {
+                    if (!e.getValueIsAdjusting()) {
+                        // loadSelectedTodo();
+                    }
+                });
 
         titleField = new JTextField(20);
         descriptionArea = new JTextArea(5, 20);
@@ -60,23 +59,24 @@ public class TodoAppGUI extends JFrame {
         descriptionArea.setWrapStyleWord(true);
         completedCheckBox = new JCheckBox("Completed");
         addButton = new JButton("Add Todo");
-        updateButton = new JButton("Update Todo"); 
+        updateButton = new JButton("Update Todo");
         deleteButton = new JButton("Delete Todo");
         refreshButton = new JButton("Refresh Todo");
-        
-        String[] filterOptions = {"All", "Completed", "Pending"};
+
+        String[] filterOptions = { "All", "Completed", "Pending" };
         filterComboBox = new JComboBox<>(filterOptions);
         filterComboBox.addActionListener(e -> {
             // filterTodos();
         });
     }
-    private void setupLayout(){
+
+    private void setupLayout() {
         setLayout(new BorderLayout());
 
         JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
-        
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
@@ -111,7 +111,7 @@ public class TodoAppGUI extends JFrame {
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         filterPanel.add(new JLabel("Filter:"));
         filterPanel.add(filterComboBox);
-        
+
         JPanel northPanel = new JPanel(new BorderLayout());
         northPanel.add(inputPanel, BorderLayout.CENTER);
         northPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -125,57 +125,72 @@ public class TodoAppGUI extends JFrame {
         add(statusPanel, BorderLayout.SOUTH);
     }
 
-    private void setupEventListeners(){
-        addButton.addActionListener(e->{
+    private void setupEventListeners() {
+        addButton.addActionListener(e -> {
             addTodo();
         });
-        updateButton.addActionListener(e->{
+        updateButton.addActionListener(e -> {
             updateTodo();
         });
-        deleteButton.addActionListener(e->{
+        deleteButton.addActionListener(e -> {
             deleteTodo();
         });
-        refreshButton.addActionListener(e->{
+        refreshButton.addActionListener(e -> {
             refreshTodo();
         });
     }
 
     private void addTodo(){
+        String title = titleField.getText().trim();
+        String description = descriptionArea.getText().trim();
+        boolean completed = completedCheckBox.isSelected();
 
-    }
+        try {
+            Todo todo = new Todo(title, description);
+            todo.setCompleted(completed);
+            todoDAO.createtodo(todo);
 
-    private void updateTodo(){
+            JOptionPane.showMessageDialog(this, "Todo added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            loadTodos();
 
-    }
-
-    private void deleteTodo(){
-
-    }
-
-    private void refreshTodo(){
-
-    }
-    
-    private void loadTodos(){
-        try{
-            List<Todo> todos = todoDAO.getTodoRow();
-            updateTable(todos);
         }
         catch(SQLException e){
-            JOptionPane.showMessageDialog(this, "Error loading todos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error adding todo: " + e.getMessage(), "Failure", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void updateTable(List<Todo> todos){
+    private void updateTodo() {
+
+    }
+
+    private void deleteTodo() {
+
+    }
+
+    private void refreshTodo() {
+
+    }
+
+    private void loadTodos() {
+        try {
+            List<Todo> todos = todoDAO.getTodoRow();
+            updateTable(todos);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error loading todos: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void updateTable(List<Todo> todos) {
         tableModel.setRowCount(0);
-        for(Todo t : todos){
+        for (Todo t : todos) {
             Object[] row = {
-                t.getId(),
-                t.getTitle(),
-                t.getDescription(),
-                t.isCompleted(),
-                t.getCreated_at(),
-                t.getUpdated_at()
+                    t.getId(),
+                    t.getTitle(),
+                    t.getDescription(),
+                    t.isCompleted(),
+                    t.getCreated_at(),
+                    t.getUpdated_at()
             };
             tableModel.addRow(row);
 
