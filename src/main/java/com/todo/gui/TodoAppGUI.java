@@ -7,7 +7,6 @@ import com.todo.dao.TodoAppDAO;
 import com.todo.model.Todo;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -158,11 +157,28 @@ public class TodoAppGUI extends JFrame {
     }
     
     private void loadTodos(){
-        try {
-            List<Todo> todos = todoDAO.getAlltodos();
-            // You can process the todos list here
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error loading todos: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        try{
+            List<Todo> todos = todoDAO.getTodoRow();
+            updateTable(todos);
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this, "Error loading todos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void updateTable(List<Todo> todos){
+        tableModel.setRowCount(0);
+        for(Todo t : todos){
+            Object[] row = {
+                t.getId(),
+                t.getTitle(),
+                t.getDescription(),
+                t.isCompleted(),
+                t.getCreated_at(),
+                t.getUpdated_at()
+            };
+            tableModel.addRow(row);
+
         }
     }
 }

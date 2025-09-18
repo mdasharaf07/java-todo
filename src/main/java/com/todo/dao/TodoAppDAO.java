@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLDataException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 import com.todo.model.Todo;
@@ -13,7 +14,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TodoAppDAO {
-    public List<Todo> getAlltodos() throws SQLDataException, java.sql.SQLException {
+
+    private Todo todoRow(ResultSet rs) throws SQLException{
+        int id = rs.getInt("id");
+        String title = rs.getString("title");
+        String description = rs.getString("description");
+        boolean completed = rs.getBoolean("completed");
+        LocalDateTime created_at = rs.getTimestamp("created_at").toLocalDateTime();
+        LocalDateTime updated_at = rs.getTimestamp("updated_at").toLocalDateTime();
+        Todo todo = new Todo(id, title, description, completed, created_at, updated_at);
+        return todo;
+
+    }
+
+    public List<Todo> getTodoRow() throws SQLDataException, java.sql.SQLException {
         List<Todo> todos = new ArrayList<>();
         DatabaseConnection dbConnection = new DatabaseConnection();
         try(Connection conn = dbConnection.getDBConnection();
@@ -22,19 +36,7 @@ public class TodoAppDAO {
         )
         {
             while(res.next()){
-                Todo todo = new Todo();
-                todo.setId(res.getInt("id"));
-                todo.setTitle(res.getString("title"));
-                todo.setDescription(res.getString("description"));
-                todo.setCompleted(res.getBoolean("completed"));
-
-                LocalDateTime createdAt = res.getTimestamp("created_at").toLocalDateTime();
-                todo.setCreated_at(createdAt);
-
-                LocalDateTime updatedAt = res.getTimestamp("updated_at").toLocalDateTime();
-                todo.setUpdated_at(updatedAt);
-
-                todos.add(todo);
+                todos.add(todoRow(res));
             }
         }
         return todos;
