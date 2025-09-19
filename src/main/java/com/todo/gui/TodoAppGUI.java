@@ -136,7 +136,7 @@ public class TodoAppGUI extends JFrame {
             deleteTodo();
         });
         refreshButton.addActionListener(e -> {
-            refreshTodo();
+            refreshTodos();
         });
     }
 
@@ -230,17 +230,15 @@ public class TodoAppGUI extends JFrame {
         }
     }
 
-    private void refreshTodo() {
-        refreshTodos();
-    }
-
     private void refreshTodos() {
         loadTodos();
         todoTable.clearSelection();
         titleField.setText("");
         descriptionArea.setText("");
         completedCheckBox.setSelected(false);
+        JOptionPane.showMessageDialog(this, "The fields have been cleared.", "Information", JOptionPane.INFORMATION_MESSAGE);
     }
+
 
     private void loadTodos() {
         try {
