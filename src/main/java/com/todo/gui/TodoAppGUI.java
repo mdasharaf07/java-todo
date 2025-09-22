@@ -22,6 +22,7 @@ public class TodoAppGUI extends JFrame {
     private JButton deleteButton;
     private JButton refreshButton;
     private JComboBox<String> filterComboBox;
+    private List<Todo> allTodos;
 
     public TodoAppGUI() {
         this.todoDAO = new TodoAppDAO();
@@ -66,7 +67,7 @@ public class TodoAppGUI extends JFrame {
         String[] filterOptions = { "All", "Completed", "Pending" };
         filterComboBox = new JComboBox<>(filterOptions);
         filterComboBox.addActionListener(e -> {
-            // filterTodos();
+            filterTodos();
         });
     }
 
@@ -236,14 +237,35 @@ public class TodoAppGUI extends JFrame {
         titleField.setText("");
         descriptionArea.setText("");
         completedCheckBox.setSelected(false);
-        JOptionPane.showMessageDialog(this, "The fields have been cleared.", "Information", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "The fields have been cleared.", "Information",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
+    private void filterTodos() {
+        if (allTodos == null) {
+            return;
+        }
+
+        String selectedFilter = (String) filterComboBox.getSelectedItem();
+        List<Todo> filteredTodos = allTodos;
+
+        if ("Completed".equals(selectedFilter)) {
+            filteredTodos = allTodos.stream()
+                    .filter(Todo::isCompleted)
+                    .collect(java.util.stream.Collectors.toList());
+        } else if ("Pending".equals(selectedFilter)) {
+            filteredTodos = allTodos.stream()
+                    .filter(todo -> !todo.isCompleted())
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
+        updateTable(filteredTodos);
+    }
 
     private void loadTodos() {
         try {
-            List<Todo> todos = todoDAO.getTodoRow();
-            updateTable(todos);
+            allTodos = todoDAO.getTodoRow();
+            updateTable(allTodos);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error loading todos: " + e.getMessage(), "Error",
                     JOptionPane.ERROR_MESSAGE);
