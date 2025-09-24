@@ -10,6 +10,9 @@ import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 
+// import com.todo.style.ColoredTodoApp;
+  // import your style class
+
 public class TodoAppGUI extends JFrame {
     private TodoAppDAO todoDAO;
     private JTable todoTable;
@@ -85,7 +88,6 @@ public class TodoAppGUI extends JFrame {
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         inputPanel.add(titleField, gbc);
-        add(inputPanel, BorderLayout.NORTH);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -93,7 +95,6 @@ public class TodoAppGUI extends JFrame {
         inputPanel.add(new JLabel("Description:"), gbc);
         gbc.gridx = 1;
         inputPanel.add(new JScrollPane(descriptionArea), gbc);
-        add(inputPanel, BorderLayout.NORTH);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
